@@ -10,6 +10,7 @@
   --accent-2: #d3eae2;
   --line: #d5dfdc;
   --shadow: 0 18px 44px rgba(12, 36, 41, 0.09);
+  --hero-image: url("assets/hero-patio.jpg");
 }
 
 * {
@@ -226,6 +227,7 @@ main {
   width: min(100%, 470px);
   height: 100%;
   min-height: 500px;
+  position: relative;
   border-radius: 26px;
   border: 1px solid rgba(194, 229, 220, 0.2);
   background-image: linear-gradient(
@@ -233,13 +235,48 @@ main {
       rgba(5, 18, 24, 0.1),
       rgba(6, 20, 24, 0.58) 74%
     ),
+    var(--hero-image),
     url("https://images.unsplash.com/photo-1472224371017-08207f84aaae?auto=format&fit=crop&w=1700&q=80");
   background-position: center;
   background-size: cover;
   box-shadow: 0 50px 80px rgba(1, 16, 20, 0.5), 0 18px 28px rgba(2, 10, 13, 0.4);
-  transform: perspective(1200px) rotateY(-7deg) rotateX(3deg);
+  transform-style: preserve-3d;
+  transform: perspective(1200px) rotateY(calc(-7deg + var(--hero-tilt-x, 0deg)))
+    rotateX(calc(3deg + var(--hero-tilt-y, 0deg))) translateY(var(--hero-lift, 0px));
   transform-origin: right center;
   animation: heroTilt 9s ease-in-out infinite;
+  overflow: hidden;
+}
+
+.hero-photo::before {
+  content: "";
+  position: absolute;
+  inset: -12%;
+  border-radius: 30px;
+  background-image: radial-gradient(
+      circle at 26% 20%,
+      rgba(222, 241, 233, 0.45) 0%,
+      rgba(222, 241, 233, 0) 46%
+    ),
+    var(--hero-image),
+    url("https://images.unsplash.com/photo-1472224371017-08207f84aaae?auto=format&fit=crop&w=1700&q=80");
+  background-size: cover;
+  background-position: center;
+  filter: saturate(1.1) contrast(1.05);
+  transform: translateZ(-32px) scale(1.12);
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+.hero-photo::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 26px;
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0) 36%),
+    linear-gradient(12deg, rgba(7, 20, 26, 0.55), rgba(6, 19, 23, 0) 38%);
+  transform: translateZ(24px);
+  pointer-events: none;
 }
 
 .hero-float {
@@ -697,10 +734,12 @@ main {
 @keyframes heroTilt {
   0%,
   100% {
-    transform: perspective(1200px) rotateY(-7deg) rotateX(3deg) translateY(0);
+    transform: perspective(1200px) rotateY(calc(-7deg + var(--hero-tilt-x, 0deg)))
+      rotateX(calc(3deg + var(--hero-tilt-y, 0deg))) translateY(var(--hero-lift, 0px));
   }
   50% {
-    transform: perspective(1200px) rotateY(-4deg) rotateX(1.5deg) translateY(-8px);
+    transform: perspective(1200px) rotateY(calc(-4deg + var(--hero-tilt-x, 0deg)))
+      rotateX(calc(1.5deg + var(--hero-tilt-y, 0deg))) translateY(calc(-8px + var(--hero-lift, 0px)));
   }
 }
 
@@ -751,5 +790,13 @@ main {
   .hero-float-bottom {
     right: 10px;
     bottom: 12px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .orb,
+  .hero-photo,
+  .hero-float {
+    animation: none;
   }
 }
